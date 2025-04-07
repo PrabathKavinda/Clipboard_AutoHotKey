@@ -7,9 +7,9 @@ isFirstRun := true  ; Flag to prevent initial notification
 
 ; Create GUI for notification
 Gui, +AlwaysOnTop +ToolWindow -Caption +LastFound
-Gui, Color, #FFFFFF
-Gui, Font, s10 cWhite, Arial
-Gui, Add, Text, vNotificationText w180 Center, Ready
+Gui, Color, 000000	
+Gui, Font, s11 cFFFFFF, Belinda, Bold
+Gui, Add, Text, vNotificationText w160 Center, Ready
 Gui, +LastFound
 WinSet, Transparent, 220
 
@@ -42,7 +42,7 @@ PositionGui() {
     if (isFirstRun) {
         lastClipboard := Clipboard
         isFirstRun := false
-        GuiControl,, NotificationText, Text Copied
+        GuiControl,, NotificationText, Copied
         ShowNotification()
         return
     }
@@ -53,7 +53,19 @@ PositionGui() {
         ShowNotification()
     } else if (Clipboard != "") {
         lastClipboard := Clipboard
-        GuiControl,, NotificationText, Text Copied
+        GuiControl,, NotificationText, Copied
+        ShowNotification()
+    }
+return
+
+; Monitor for cut operations (Ctrl+X)
+~^x::
+    Sleep, 100  ; Give time for the clipboard to update
+    
+    if (Clipboard != "") {
+        lastClipboard := Clipboard
+        isFirstRun := false
+        GuiControl,, NotificationText, Cut
         ShowNotification()
     }
 return
@@ -78,10 +90,10 @@ CheckClipboard:
     ; such as right-click menu copy or application-specific copy functions
     
     if (clipCheck != Clipboard && !isFirstRun && Clipboard != "") {
-        if (A_ThisHotkey != "~^c" && Clipboard != lastClipboard) {
+        if (A_ThisHotkey != "~^c" && A_ThisHotkey != "~^x" && Clipboard != lastClipboard) {
             clipCheck := Clipboard
             lastClipboard := Clipboard
-            GuiControl,, NotificationText, Text Copied
+            GuiControl,, NotificationText, Copied
             ShowNotification()
         }
     }
